@@ -1,17 +1,3 @@
-// SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.13;
-
-contract Counter {
-    uint256 public number;
-
-    function setNumber(uint256 newNumber) public {
-        number = newNumber;
-    }
-
-    function increment() public {
-        number++;
-    }
-}
 // SPDX-License-Identifier: MIT
 
 // Layout of Contract:
@@ -49,8 +35,8 @@ contract DropNft is ERC1155, ReentrancyGuard, Ownable, ERC1155Pausable, ERC1155S
     // State variables //
     /////////////////////
 
-    string public constant name = "Mapdrop Token";
-    string public constant symbol = "MT";
+    string public constant name = "Lazy NFT";
+    string public constant symbol = "LN";
 
     mapping(uint256 => string) public s_tokenURI;
 
@@ -72,11 +58,11 @@ contract DropNft is ERC1155, ReentrancyGuard, Ownable, ERC1155Pausable, ERC1155S
         _mintBatch(_to, _ids, _amounts, "");
     }
 
-    function burn(uint256 _id, uint256 _amount) external {
+    function burn(uint256 _id, uint256 _amount) external onlyOwner {
         _burn(msg.sender, _id, _amount);
     }
 
-    function burnBatch(uint256[] memory _ids, uint256[] memory _amounts) external {
+    function burnBatch(uint256[] memory _ids, uint256[] memory _amounts) external onlyOwner{
         _burnBatch(msg.sender, _ids, _amounts);
     }
 
