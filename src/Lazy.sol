@@ -30,7 +30,7 @@ import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Pausable.sol";
 import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Supply.sol";
 import "@openzeppelin/contracts/interfaces/IERC1155.sol";
 
-contract DropNft is ERC1155, ReentrancyGuard, Ownable, ERC1155Pausable, ERC1155Supply {
+contract Lazy is ERC1155, ReentrancyGuard, Ownable, ERC1155Pausable, ERC1155Supply {
     /////////////////////
     // State variables //
     /////////////////////
