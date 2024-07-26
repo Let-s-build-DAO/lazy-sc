@@ -95,8 +95,8 @@ contract MarketPlace is Ownable, ERC1155Holder, ReentrancyGuard {
     // Functions       //
     /////////////////////
 
-    constructor(address nftContract) Ownable(msg.sender) {
-        i_nftContract = IERC1155(nftContract);
+    constructor() Ownable(msg.sender) {
+        i_nftContract = IERC1155(0xF8324D5172Bb7558d4B4495e8a02B1281C43579D);
     }
 
     function createMarketItem(uint96 tokenId, uint256 price, uint96 supply) external payable nonReentrant {
