@@ -62,7 +62,7 @@ contract DropNft is ERC1155, ReentrancyGuard, Ownable, ERC1155Pausable, ERC1155S
         _burn(msg.sender, _id, _amount);
     }
 
-    function burnBatch(uint256[] memory _ids, uint256[] memory _amounts) external onlyOwner{
+    function burnBatch(uint256[] memory _ids, uint256[] memory _amounts) external onlyOwner {
         _burnBatch(msg.sender, _ids, _amounts);
     }
 
