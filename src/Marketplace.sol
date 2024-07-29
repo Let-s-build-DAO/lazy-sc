@@ -95,9 +95,13 @@ contract MarketPlace is Ownable, ERC1155Holder, ReentrancyGuard {
     // Functions       //
     /////////////////////
 
-    constructor(address nftAddress) Ownable(msg.sender) {
+    constructor(address nftAddress) Ownable(msg.sender) payable {
         i_nftContract = IERC1155(nftAddress);
     }
+
+    fallback() external payable { }
+
+    receive() external payable { }
 
     function createMarketItem(uint96 tokenId, uint256 price, uint96 supply) external nonReentrant {
         require(price > 0, "Price must be at least 1 wei");
@@ -226,7 +230,7 @@ contract MarketPlace is Ownable, ERC1155Holder, ReentrancyGuard {
         return items;
     }
 
-    function withdraw(address payable _payableAddress) external onlyOwner {
+    function withdraw(address payable _payableAddress) external payable onlyOwner {
         uint256 balance = address(this).balance;
         require(balance > 0);
         _payableAddress.transfer(balance);
