@@ -73,8 +73,8 @@ contract MarketPlace is Ownable, ERC1155Holder, ReentrancyGuard {
         uint96 suppy;
     }
 
-    mapping(uint96 => s_MarketItem) private s_idToMarketItem;
-    mapping(uint96 => s_ClaimableItem) private s_idToClaimableItem;
+    mapping(uint96 => s_MarketItem) public s_idToMarketItem;
+    mapping(uint96 => s_ClaimableItem) public s_idToClaimableItem;
     mapping(address => mapping(uint96 => s_UserItem)) public s_userPurchases;
 
     /////////////////////
@@ -95,11 +95,11 @@ contract MarketPlace is Ownable, ERC1155Holder, ReentrancyGuard {
     // Functions       //
     /////////////////////
 
-    constructor() Ownable(msg.sender) {
-        i_nftContract = IERC1155(0xF8324D5172Bb7558d4B4495e8a02B1281C43579D);
+    constructor(address nftAddress) Ownable(msg.sender) {
+        i_nftContract = IERC1155(nftAddress);
     }
 
-    function createMarketItem(uint96 tokenId, uint256 price, uint96 supply) external payable nonReentrant {
+    function createMarketItem(uint96 tokenId, uint256 price, uint96 supply) external nonReentrant {
         require(price > 0, "Price must be at least 1 wei");
         require(supply > 0, "supply can not be zero");
 
@@ -113,7 +113,7 @@ contract MarketPlace is Ownable, ERC1155Holder, ReentrancyGuard {
         emit MarketItemCreated(itemId, tokenId, msg.sender, price, supply);
     }
 
-    function createClaimableItem(uint96 tokenId, uint96 supply) external payable nonReentrant {
+    function createClaimableItem(uint96 tokenId, uint96 supply) external nonReentrant {
         uint96 itemId = s_claimableCounter;
         s_claimableCounter++;
 
