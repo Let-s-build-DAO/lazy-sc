@@ -226,6 +226,12 @@ contract MarketPlace is Ownable, ERC1155Holder, ReentrancyGuard {
         return items;
     }
 
+    function withdraw(address payable _payableAddress) external onlyOwner {
+        uint256 balance = address(this).balance;
+        require(balance > 0);
+        _payableAddress.transfer(balance);
+    }
+
     function getUserPurchases(address user, uint96 itemId) external view returns (s_UserItem memory) {
         return s_userPurchases[user][itemId];
     }
