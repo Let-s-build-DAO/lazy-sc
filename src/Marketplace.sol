@@ -95,13 +95,9 @@ contract MarketPlace is Ownable, ERC1155Holder, ReentrancyGuard {
     // Functions       //
     /////////////////////
 
-    constructor(address nftAddress) Ownable(msg.sender) payable {
+    constructor(address nftAddress) Ownable(msg.sender) {
         i_nftContract = IERC1155(nftAddress);
     }
-
-    fallback() external payable { }
-
-    receive() external payable { }
 
     function createMarketItem(uint96 tokenId, uint256 price, uint96 supply) external nonReentrant {
         require(price > 0, "Price must be at least 1 wei");
@@ -128,7 +124,7 @@ contract MarketPlace is Ownable, ERC1155Holder, ReentrancyGuard {
         emit ClaimableItemCreated(itemId, tokenId, msg.sender, supply);
     }
 
-    function createMarketSale(uint96 itemId, uint96 supply) external payable nonReentrant {
+    function createMarketSale(uint96 itemId) external payable nonReentrant {
         s_MarketItem memory marketItem = s_idToMarketItem[itemId];
 
         if (marketItem.itemId == 0) {
@@ -139,27 +135,25 @@ contract MarketPlace is Ownable, ERC1155Holder, ReentrancyGuard {
             revert MarketPlace__OutOfSale();
         }
 
-        uint256 cost = supply * marketItem.price;
-
-        if (msg.value < cost) {
+        if (msg.value < marketItem.price) {
             revert MarketPlace__NotAskingPrice();
         }
 
-        uint96 remainingSupply = marketItem.suppy - supply;
+        uint96 remainingSupply = marketItem.suppy - 1;
 
         if (remainingSupply < 1) {
             s_soldItemsCounter++;
         }
 
-        IERC1155(i_nftContract).safeTransferFrom(address(this), msg.sender, marketItem.tokenId, supply, msg.data);
+        IERC1155(i_nftContract).safeTransferFrom(address(this), msg.sender, marketItem.tokenId, 1, msg.data);
 
         // Record the purchase
         s_UserItem memory userPerchase = s_userPurchases[msg.sender][itemId];
 
         if (userPerchase.itemId <= 0) {
-            s_userPurchases[msg.sender][itemId] = s_UserItem(itemId, marketItem.tokenId, supply);
+            s_userPurchases[msg.sender][itemId] = s_UserItem(itemId, marketItem.tokenId, 1);
         } else {
-            s_userPurchases[msg.sender][itemId].suppy += supply;
+            s_userPurchases[msg.sender][itemId].suppy += 1;
         }
 
         // Calculate percentage
@@ -167,7 +161,7 @@ contract MarketPlace is Ownable, ERC1155Holder, ReentrancyGuard {
         uint256 creatorAmount = marketItem.price - fee;
         s_idToMarketItem[itemId].seller.transfer(creatorAmount);
 
-        emit MarketItemSold(itemId, marketItem.tokenId, msg.sender, cost, supply);
+        emit MarketItemSold(itemId, marketItem.tokenId, msg.sender, marketItem.price, 1);
     }
 
     function claimNft(uint96 itemId) external nonReentrant {
@@ -187,7 +181,8 @@ contract MarketPlace is Ownable, ERC1155Holder, ReentrancyGuard {
         if (item.itemId > 0) {
             revert MarketPlace__ItemClaimed();
         }
-
+        
+        s_idToClaimableItem[itemId].suppy = claimableItem.suppy - 1;
         s_userPurchases[msg.sender][itemId] = s_UserItem(itemId, claimableItem.tokenId, 1);
 
         IERC1155(i_nftContract).safeTransferFrom(address(this), msg.sender, claimableItem.tokenId, 1, msg.data);
