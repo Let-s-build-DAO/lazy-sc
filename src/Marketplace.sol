@@ -144,7 +144,8 @@ contract MarketPlace is Ownable, ERC1155Holder, ReentrancyGuard {
         if (remainingSupply < 1) {
             s_soldItemsCounter++;
         }
-
+        s_idToMarketItem[itemId].suppy = remainingSupply;
+        
         IERC1155(i_nftContract).safeTransferFrom(address(this), msg.sender, marketItem.tokenId, 1, msg.data);
 
         // Record the purchase
@@ -229,7 +230,7 @@ contract MarketPlace is Ownable, ERC1155Holder, ReentrancyGuard {
         return address(this).balance;
     }
 
-    function withdraw(address payable _payableAddress) external payable onlyOwner {
+    function withdraw(address payable _payableAddress) external onlyOwner {
         uint256 balance = address(this).balance;
         require(balance > 0);
         _payableAddress.transfer(balance);

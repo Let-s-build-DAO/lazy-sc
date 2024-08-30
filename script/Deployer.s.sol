@@ -17,7 +17,7 @@ contract DeployScript is Script {
 
         Lazy lazyContract = new Lazy();
         address lazyAddress = address(lazyContract);
-        
+
         new MarketPlace(lazyAddress);
         vm.stopBroadcast();
     }
